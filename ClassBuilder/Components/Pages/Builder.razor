@@ -1,0 +1,125 @@
+﻿@page "/builder"
+@using System.Text
+@rendermode InteractiveServer
+@inject IJSRuntime JSRuntime
+
+<PageTitle>Class Builder</PageTitle>
+
+<h1>C++ Class Builder</h1>
+
+<div>
+	<label>
+		Class
+		<InputText @bind-Value="input"></InputText>
+	</label>
+</div>
+
+<button class="btn btn-primary" @onclick="DownloadHeader">Download .hpp</button>
+<button class="btn btn-primary" @onclick="DownloadCPP">Download .cpp</button>
+
+@code {
+	private string input = "";
+
+	async Task DownloadHeader()
+	{
+		byte[] file = System.Text.Encoding.UTF8.GetBytes(makeHeader(input));
+		await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", input + ".hpp", "text/plain", file);
+		StateHasChanged();
+	}
+
+	async Task DownloadCPP()
+	{
+		byte[] file = System.Text.Encoding.UTF8.GetBytes(makeDefinition(input));
+		await JSRuntime.InvokeVoidAsync("BlazorDownloadFile", input + ".cpp", "text/plain", file);
+		StateHasChanged();
+	}
+
+	string getHeaderGuard(string className)
+	{
+		var builder = new StringBuilder();
+
+		for (int i = 0; i < className.Length; i++)
+		{
+			if (i > 0 && char.IsUpper(className[i]))
+				builder.Append("_");
+			builder.Append(char.ToUpper(className[i]));
+		}
+		builder.Append("_HPP");
+		return builder.ToString();
+	}
+
+	string makeHeader(string className)
+	{
+		var builder = new StringBuilder();
+		string headerGuard = getHeaderGuard(className);
+
+		// Initial Boilerplate
+		builder.AppendLine("#ifndef " + headerGuard);
+		builder.AppendLine("# define " + headerGuard);
+		builder.AppendLine("");
+		builder.AppendLine("class	" + className);
+		builder.AppendLine("{");
+		builder.AppendLine("	public:");
+		// Orthodox Cannonical Form with copy-swap idiom
+		builder.AppendLine("		" + className + "();");
+		builder.AppendLine("		" + className + "(" + className + "& instance);");
+		builder.AppendLine("		" + className + "& operator=(" + className + " copy);");
+		builder.AppendLine("		~" + className + "();");
+		builder.AppendLine("		void	swap(" + className + "& other);");
+
+		// Other constructors
+
+		// Getters/Setters
+
+		// Closing Boilerplate
+		builder.AppendLine("};");
+		builder.AppendLine("");
+		builder.AppendLine("#endif");
+		return builder.ToString();
+	}
+
+	string makeDefinition(string className)
+	{
+		var builder = new StringBuilder();
+		string classRef = className + "::";
+
+		// Initial Boilerplate
+		builder.AppendLine("#include \"" + className + ".hpp\"");
+		builder.AppendLine("");
+
+		// Orthodox Cannonical Form with copy-swap idiom
+		builder.AppendLine(classRef + className + "()");
+		builder.AppendLine("{");
+		builder.AppendLine("}");
+		builder.AppendLine("");
+
+		builder.AppendLine(classRef + className + "(" + className + "& instance)");
+		builder.AppendLine("{");
+		builder.AppendLine("}");
+		builder.AppendLine("");
+
+		builder.AppendLine(className + "& " + classRef + "operator= (" + className + " copy)");
+		builder.AppendLine("{");
+		builder.AppendLine("	this->swap(copy);");
+		builder.AppendLine("	return (*this);");
+		builder.AppendLine("}");
+		builder.AppendLine("");
+
+		builder.AppendLine(classRef + "~" + className + "()");
+		builder.AppendLine("{");
+		builder.AppendLine("}");
+		builder.AppendLine("");
+
+		builder.AppendLine("void	" + classRef + "swap(" + className + "& other)");
+		builder.AppendLine("{");
+		builder.AppendLine("}");
+		builder.AppendLine("");
+
+		// Other constructors
+
+		// Getters/Setters
+
+		// Closing Boilerplate
+		return builder.ToString();
+	}
+}
