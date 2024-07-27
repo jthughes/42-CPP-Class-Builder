@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35122.118
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassBuilder", "ClassBuilder\ClassBuilder.csproj", "{A242AF71-983D-4256-B8A1-A684B00DD52D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "C++ Class Builder", "C++ Class Builder.csproj", "{55FEA9EA-3756-42CA-9AD6-3A2138DBE15A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +11,15 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A242AF71-983D-4256-B8A1-A684B00DD52D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A242AF71-983D-4256-B8A1-A684B00DD52D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A242AF71-983D-4256-B8A1-A684B00DD52D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A242AF71-983D-4256-B8A1-A684B00DD52D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55FEA9EA-3756-42CA-9AD6-3A2138DBE15A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55FEA9EA-3756-42CA-9AD6-3A2138DBE15A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55FEA9EA-3756-42CA-9AD6-3A2138DBE15A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55FEA9EA-3756-42CA-9AD6-3A2138DBE15A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {80FDEBED-E52F-4D8A-9FB4-BE4E3FFE00EE}
+		SolutionGuid = {2A6FBAE0-55A2-40A5-811C-1442A5F5BB18}
 	EndGlobalSection
 EndGlobal
