@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "C++ Class Builder",
   "resources": {
-    "hash": "sha256-zrqCrQsEilsC3RcsiRzDV/PZMv0cA0d9sbl6UvZWj3A=",
+    "hash": "sha256-8HD+J45G9l+BCG2jI6YygF935ecIRVW5SDQpRc7ZRZs=",
     "jsModuleNative": {
       "dotnet.native.8.0.7.pvkr2na9g4.js": "sha256-tFsxPBbhkdn6GKNBKvCRLzrfAHdyM86odYTe0MtrwMk="
     },
@@ -17,7 +17,7 @@
       "icudt_no_CJK.dat": "sha256-L7sV7NEYP37/Qr2FPCePo5cJqRgTXRwGHuwF5Q+0Nfs="
     },
     "assembly": {
-      "C++ Class Builder.wasm": "sha256-gJRVCIXWg3mH7x60rtk7BzdNfRWnWCSoMRHyIqosAzc=",
+      "C++ Class Builder.wasm": "sha256-dAu5zlM7Fhx5UL40qjckvQdwQAg5KJFaEMx+A+NWOAg=",
       "Microsoft.AspNetCore.Components.Forms.wasm": "sha256-NZsvLq1rFdJuXeJz+NJejVvXvxaXu/K4aTrExHJ7n/g=",
       "Microsoft.AspNetCore.Components.wasm": "sha256-EB0tLOk4WQnm5d7yR2DM4AUDk67t+Vyj+uhL6blphB8=",
       "Microsoft.AspNetCore.Components.Web.wasm": "sha256-pBoWAc83ySwHb1StMjAXMnEDvRcTa4Z3Q3TNJWrwtyM=",
