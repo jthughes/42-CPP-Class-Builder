@@ -1,5 +1,6 @@
 ﻿@page "/builder"
 @using System.Text
+@using CPP_Class_Builder
 
 @inject IJSRuntime JSRuntime
 
@@ -7,15 +8,144 @@
 
 <h1>C++ Class Builder</h1>
 
-<div>
-	<label>
-		Class
-		<InputText @bind-Value="input"></InputText>
-	</label>
+<div id="ClassInput">
+	<div>
+		<h2>
+			Class
+		</h2>
+		<label>
+			Class Name: <InputText @bind-Value="input"></InputText>
+		</label>
+	</div>
+	<h3>Methods</h3>
+	<button @onclick="AddMethod">Add Method</button>
+	@if (methods.Count() > 0)
+	{
+		<table>
+			<tr>
+				<th>Access</th>
+				<th>Static</th>
+				<th>Virtual</th>
+				<th>Return Type</th>
+				<th>Method</th>
+				<th>Const</th>
+				<th>Pure</th>
+				<th></th>
+			</tr>
+			@foreach (var method in methods)
+			{
+				<tr>
+					<td>
+						<select @bind="method.AccessLevel" name="AccessLevel" id="access_level">
+							<option value="public">Public</option>
+							<option value="protected">Protected</option>
+							<option value="private">Private</option>
+						</select>
+					</td>
+					<td>
+						<input type="checkbox" @bind="method.IsStatic" name="Static" id="static" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="method.IsVirtual" name="Virtual" id="virtual" />
+					</td>
+					<td>
+						<input @bind="method.ReturnType" name="ReturnType" id="return_type" />
+					</td>
+					<td>
+						<input @bind="method.Name" name="Name" id="name" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="method.IsConst" name="Const" id="const" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="method.IsPure" name="Pure" id="pure" />
+					</td>
+					<td>
+						<button @onclick="() =>methods.Remove(method)">🗙</button>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+	<h3>Properties</h3>
+	<button @onclick="AddProperty">Add Property</button>
+	@if (properties.Count() > 0)
+	{
+		<table>
+			<tr>
+				<th>Access</th>
+				<th>Static</th>
+				<th>Type</th>
+				<th>Property</th>
+				<th>Default Value</th>
+				<th>Const</th>
+				<th>Get</th>
+				<th>Set</th>
+				<th></th>
+			</tr>
+			@foreach (var property in properties)
+			{
+				<tr>
+					<td>
+						<select @bind="property.AccessLevel" name="AccessLevel" id="acces_level">
+							<option value="public">Public</option>
+							<option value="protected">Protected</option>
+							<option value="private">Private</option>
+						</select>
+					</td>
+					<td>
+						<input type="checkbox" @bind="property.IsStatic" name="Static" id="static" />
+					</td>
+					<td>
+						<input @bind="property.Type" name="Type" id="type" />
+					</td>
+					<td>
+						<input @bind="property.Name" name="Name" id="name" />
+					</td>
+					<td>
+						<input @bind="property.DefaultValue" name="Default Value" id="default" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="property.IsConst" name="Const" id="const" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="property.HasGetter" name="Get" id="get" />
+					</td>
+					<td>
+						<input type="checkbox" @bind="property.HasSetter" name="Set" id="set" />
+					</td>
+					<td>
+						<button @onclick="() =>properties.Remove(property)">🗙</button>
+					</td>
+				</tr>
+			}
+		</table>
+	}
+</div>
+<br />
+<div id="DownloadButtons">
+	<button class="btn btn-primary" @onclick="DownloadHeader">Download .hpp</button>
+	<button class="btn btn-primary" @onclick="DownloadCPP">Download .cpp</button>
 </div>
 
-<button class="btn btn-primary" @onclick="DownloadHeader">Download .hpp</button>
-<button class="btn btn-primary" @onclick="DownloadCPP">Download .cpp</button>
+@code {
+	private List<MethodItem> methods = new();
+	private List<PropertyItem> properties = new();
+
+	private void AddMethod()
+	{
+		methods.Add(new MethodItem());
+		// { Name = "", ReturnType = "", AccessLevel = "public", IsStatic = false, IsVirtual = false, IsPure = false});
+	}
+
+	private void AddProperty()
+	{
+		properties.Add(new PropertyItem());
+		// { Name = "", Type = "", DefaultValue = "", AccessLevel = "public", IsStatic = false, IsConst = false });
+	}
+
+}
+
 
 @code {
 	private string input = "";
@@ -48,6 +178,121 @@
 		return builder.ToString();
 	}
 
+	string GetMethodDeclarationString(MethodItem method, string indentation)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append(indentation);
+		if (method.IsStatic)
+			builder.Append("static ");
+		if (method.IsVirtual)
+			builder.Append("virtual ");
+		builder.Append(method.ReturnType);
+		builder.Append(" ");
+		builder.Append(method.Name);
+		builder.Append("()");
+		if (method.IsConst)
+			builder.Append(" const");
+		if (method.IsPure)
+			builder.Append(" = 0");
+		builder.Append(";");
+		return builder.ToString();
+	}
+
+	string GetMethodDefinitionString(MethodItem method, string className)
+	{
+		var builder = new StringBuilder();
+		if (method.IsStatic)
+			builder.Append("static ");
+		builder.Append(method.ReturnType);
+		builder.Append(" ");
+		builder.Append(className);
+		builder.Append("::");
+		builder.Append(method.Name);
+		builder.Append("()");
+		if (method.IsConst)
+			builder.Append(" const");
+		return builder.ToString();
+	}
+
+	string GetPropertyDeclarationString(PropertyItem property, string indentation)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append(indentation);
+		if (property.IsStatic)
+			builder.Append("static ");
+		builder.Append(property.Type);
+		builder.Append(" ");
+		builder.Append(property.Name);
+		if (property.IsConst)
+			builder.Append(" const");
+		builder.Append(";");
+		return builder.ToString();
+	}
+
+	string Capitalise(string str)
+	{
+		string result = str.Substring(0,1).ToUpper();
+		result += str.Substring(1);
+		return (result);
+	}
+
+	string makeGetDeclaration(PropertyItem property, string indentation)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append(indentation);
+		builder.Append(property.Type);
+		builder.Append(" get");
+		builder.Append(Capitalise(property.Name));
+		builder.Append("() const;");
+		return builder.ToString();
+
+	}
+
+	string makeSetDeclaration(PropertyItem property, string indentation)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append(indentation);
+		builder.Append("void	set");
+		builder.Append(Capitalise(property.Name));
+		builder.Append("(");
+		builder.Append(property.Type);
+		builder.Append(" const value);");
+		return builder.ToString();
+
+	}
+
+	string makeGetDefinition(PropertyItem property, string className)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append(property.Type);
+		builder.Append("	");
+		builder.Append(className);
+		builder.Append("::");
+		builder.Append(" get");
+		builder.Append(Capitalise(property.Name));
+		builder.Append("() const");
+		return builder.ToString();
+	}
+
+	string makeSetDefinition(PropertyItem property, string className)
+	{
+		var builder = new StringBuilder();
+
+		builder.Append("void	");
+		builder.Append(className);
+		builder.Append("::set");
+		builder.Append(Capitalise(property.Name));
+		builder.Append("(");
+		builder.Append(property.Type);
+		builder.Append(" const value)");
+		return builder.ToString();
+	}
+
 	string makeHeader(string className)
 	{
 		var builder = new StringBuilder();
@@ -59,17 +304,84 @@
 		builder.AppendLine("");
 		builder.AppendLine("class	" + className);
 		builder.AppendLine("{");
+		// Public
 		builder.AppendLine("	public:");
-		// Orthodox Cannonical Form with copy-swap idiom
+		// -> Orthodox Cannonical Form with copy-swap idiom
 		builder.AppendLine("		" + className + "();");
 		builder.AppendLine("		" + className + "(" + className + "& instance);");
 		builder.AppendLine("		" + className + "& operator=(" + className + " copy);");
 		builder.AppendLine("		~" + className + "();");
 		builder.AppendLine("		void	swap(" + className + "& other);");
+		builder.AppendLine("");
+		// -> Other constructors
 
-		// Other constructors
+		// -> Getters/Setters
+		foreach (var property in properties)
+		{
+			if (property.HasGetter)
+			{
+				builder.AppendLine(makeGetDeclaration(property, "		"));
+			}
+			if (property.HasSetter)
+			{
+				builder.AppendLine(makeSetDeclaration(property, "		"));
+			}
+		}
 
-		// Getters/Setters
+		// -> Methods
+		foreach (var method in methods)
+		{
+			if (method.AccessLevel == "public" && method.IsPure == false)
+			{
+				builder.AppendLine(GetMethodDeclarationString(method, "		"));
+			}
+		}
+		// -> Properties
+		foreach (var property in properties)
+		{
+			if (property.AccessLevel == "public")
+			{
+				builder.AppendLine(GetPropertyDeclarationString(property, "		"));
+			}
+		}
+		// Protected
+		builder.AppendLine("");
+		builder.AppendLine("	protected:");
+		// -> Methods
+		foreach (var method in methods)
+		{
+			if (method.AccessLevel == "protected" && method.IsPure == false)
+			{
+				builder.AppendLine(GetMethodDeclarationString(method, "		"));
+			}
+		}
+		// -> Properties
+		foreach (var property in properties)
+		{
+			if (property.AccessLevel == "protected")
+			{
+				builder.AppendLine(GetPropertyDeclarationString(property, "		"));
+			}
+		}
+
+		// Private
+		builder.AppendLine("");
+		builder.AppendLine("	private:");
+		foreach (var method in methods)
+		{
+			if (method.AccessLevel == "private" && method.IsPure == false)
+			{
+				builder.AppendLine(GetMethodDeclarationString(method, "		"));
+			}
+		}
+		// -> Properties
+		foreach (var property in properties)
+		{
+			if (property.AccessLevel == "private")
+			{
+				builder.AppendLine(GetPropertyDeclarationString(property, "		"));
+			}
+		}
 
 		// Closing Boilerplate
 		builder.AppendLine("};");
@@ -118,6 +430,33 @@
 		// Other constructors
 
 		// Getters/Setters
+		foreach (var property in properties)
+		{
+			if (property.HasGetter)
+			{
+				builder.AppendLine(makeGetDefinition(property, className));
+				builder.AppendLine("{");
+				builder.AppendLine("	this->" + property.Name + " = value;");
+				builder.AppendLine("}");
+				builder.AppendLine("");
+			}
+			if (property.HasSetter)
+			{
+				builder.AppendLine(makeSetDefinition(property, className));
+				builder.AppendLine("{");
+				builder.AppendLine("	return (this->" + property.Name + ");");
+				builder.AppendLine("}");
+				builder.AppendLine("");
+			}
+		}
+		// Methods
+		foreach (var method in methods)
+		{
+			builder.AppendLine(GetMethodDefinitionString(method, className));
+			builder.AppendLine("{");
+			builder.AppendLine("}");
+			builder.AppendLine("");
+		}
 
 		// Closing Boilerplate
 		return builder.ToString();

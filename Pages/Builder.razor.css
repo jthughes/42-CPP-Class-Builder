@@ -1,0 +1,23 @@
+﻿body {
+}
+table
+{
+    text-align: center;
+    border-spacing: 4px;
+    border-collapse: separate;
+}
+
+#ClassInput {
+    padding: 10px;
+    border: 1px solid black;
+    width: max-content;
+    background-color: lightgray;
+}
+
+#DownloadButtons
+{
+    padding: 10px;
+    border:1px solid black;
+    width: max-content;
+    background-color: dimgray;
+}
