@@ -164,3 +164,27 @@ main[b-v0ehil4ho8] {
         overflow-y: auto;
     }
 }
+/* /Pages/Builder.razor.rz.scp.css */
+body[b-r0xq2f43c4] {
+}
+table[b-r0xq2f43c4]
+{
+    text-align: center;
+    border-spacing: 4px;
+    border-collapse: separate;
+}
+
+#ClassInput[b-r0xq2f43c4] {
+    padding: 10px;
+    border: 1px solid black;
+    width: max-content;
+    background-color: lightgray;
+}
+
+#DownloadButtons[b-r0xq2f43c4]
+{
+    padding: 10px;
+    border:1px solid black;
+    width: max-content;
+    background-color: dimgray;
+}
