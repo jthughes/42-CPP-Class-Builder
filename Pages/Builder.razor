@@ -1,4 +1,4 @@
-﻿@page "/builder"
+﻿@page "/"
 @using System.Text
 @using CPP_Class_Builder
 
@@ -61,7 +61,7 @@
 						<input type="checkbox" @bind="method.IsPure" name="Pure" id="pure" />
 					</td>
 					<td>
-						<button @onclick="() =>methods.Remove(method)">🗙</button>
+						<button @onclick="() =>methods.Remove(method)">Remove</button>
 					</td>
 				</tr>
 			}
@@ -115,7 +115,7 @@
 						<input type="checkbox" @bind="property.HasSetter" name="Set" id="set" />
 					</td>
 					<td>
-						<button @onclick="() =>properties.Remove(property)">🗙</button>
+						<button @onclick="() =>properties.Remove(property)">Remove</button>
 					</td>
 				</tr>
 			}
@@ -220,13 +220,11 @@
 		var builder = new StringBuilder();
 
 		builder.Append(indentation);
-		if (property.IsStatic)
-			builder.Append("static ");
+		if (property.IsConst)
+			builder.Append("const ");
 		builder.Append(property.Type);
 		builder.Append(" ");
 		builder.Append(property.Name);
-		if (property.IsConst)
-			builder.Append(" const");
 		builder.Append(";");
 		return builder.ToString();
 	}
@@ -272,8 +270,7 @@
 		builder.Append(property.Type);
 		builder.Append("	");
 		builder.Append(className);
-		builder.Append("::");
-		builder.Append(" get");
+		builder.Append("::get");
 		builder.Append(Capitalise(property.Name));
 		builder.Append("() const");
 		return builder.ToString();
@@ -400,13 +397,31 @@
 		builder.AppendLine("");
 
 		// Orthodox Cannonical Form with copy-swap idiom
-		builder.AppendLine(classRef + className + "()");
+		string vars = "";
+		if (properties.Count > 0)
+			vars += ":";
+		bool first = true;
+		foreach (var property in properties)
+		{
+			if (property.IsStatic)
+				continue;
+			if (first)
+				first = false;
+			else
+				vars += ",";
+			vars += " " + property.Name + "(" + property.DefaultValue + ")";
+		}
+		builder.AppendLine(classRef + className + "()" + vars);
 		builder.AppendLine("{");
 		builder.AppendLine("}");
 		builder.AppendLine("");
 
 		builder.AppendLine(classRef + className + "(" + className + "& instance)");
 		builder.AppendLine("{");
+		foreach (var property in properties)
+		{
+			builder.AppendLine("	this->" + property.Name + " = instance." + property.Name + ";");
+		}
 		builder.AppendLine("}");
 		builder.AppendLine("");
 
@@ -424,6 +439,10 @@
 
 		builder.AppendLine("void	" + classRef + "swap(" + className + "& other)");
 		builder.AppendLine("{");
+		foreach (var property in properties)
+		{
+			builder.AppendLine("	std::swap(this->" + property.Name + ", other." + property.Name + ");");
+		}
 		builder.AppendLine("}");
 		builder.AppendLine("");
 
@@ -436,7 +455,7 @@
 			{
 				builder.AppendLine(makeGetDefinition(property, className));
 				builder.AppendLine("{");
-				builder.AppendLine("	this->" + property.Name + " = value;");
+				builder.AppendLine("	return (this->" + property.Name + ");");
 				builder.AppendLine("}");
 				builder.AppendLine("");
 			}
@@ -444,7 +463,7 @@
 			{
 				builder.AppendLine(makeSetDefinition(property, className));
 				builder.AppendLine("{");
-				builder.AppendLine("	return (this->" + property.Name + ");");
+				builder.AppendLine("	this->" + property.Name + " = value;");
 				builder.AppendLine("}");
 				builder.AppendLine("");
 			}
